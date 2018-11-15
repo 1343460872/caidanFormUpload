@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>caidan上传文件库</title>
+    <script src="caidan-upload.js"></script>
 </head>
 <body>
 
@@ -13,9 +14,497 @@
     <li>断点续传</li>
     <li>文件列表操作[删除，文件重命名]</li>
     <li>上传前中后事件</li>
+    <li>一个页面多次使用</li>
 </ul>
+<form id="informationForm" class="certified-form">
+    <div class="inputBox" data-tip="nameCompany">
+        <label id="fillCompany">公司名称<i>*</i></label>
+        <div>
+            <input type="text" name="nameCompany" placeholder="请输入您公司的全称" maxlength="40" />
+            <div class="verify-fail">请输入公司全称！</div>
+            <div class="verify-success">验证已通过</div>
+        </div>
+    </div>
+    <div class="inputBox" data-tip="businessLicenseNumber">
+        <label>统一社会信用代码<i>*</i></label>
+        <div>
+            <input type="text" name="businessLicenseNumber" placeholder="请输入统一社会信用代码" maxlength="18" />
+            <div class="verify-fail">请输入统一社会信用代码！</div>
+            <div class="verify-success">验证已通过</div>
+        </div>
+    </div>
+    <div class="inputBox" data-tip="contactName">
+        <label>联系人姓名<i>*</i></label>
+        <div>
+            <input type="text" name="contactName" placeholder="请输入联系人的姓名" maxlength="40" />
+            <div class="verify-fail">请输入正确姓名！</div>
+            <div class="verify-success">验证已通过</div>
+        </div>
+    </div>
+    <div class="inputBox" data-tip="phone">
+        <label>联系人手机<i>*</i></label>
+        <div>
+            <input type="text" name="phone" maxlength="11" placeholder="请输入11位手机号码"/>
+            <div class="verify-fail">请输入联系人手机！</div>
+            <div class="verify-success">验证已通过</div>
+        </div>
+    </div>
+    <div class="inputBox" data-tip="email">
+        <label>企业邮箱</label>
+        <div>
+            <input type="text" name="email" placeholder="请输入邮箱账号" maxlength="30"/>
+            <div class="verify-fail">请输入邮箱账号！</div>
+            <div class="verify-success">验证已通过</div>
+        </div>
+    </div>
+
+    <div class="inputBox" data-tip="area">
+        <label>所在地区<i>*</i></label>
+        <div class="citBox">
+            <div class="pick-area pick-area4" id="companyArea"></div>
+            <input type="hiden" name="companyArea" style="display: none" placeholder=""/>
+            <div class="verify-fail">请选择地区</div>
+            <div class="verify-success">验证已通过</div>
+        </div>
+    </div>
+
+    <div class="inputBox" data-tip="address">
+        <label>办公地址</label>
+        <div>
+            <input type="text" name="address" maxlength="100" placeholder="请输入公司办公地址"/>
+            <div class="verify-fail"></div>
+            <div class="verify-success">验证已通过</div>
+        </div>
+    </div>
+
+    <div class="inputBox uploadBox companyLicense" data-tip="license">
+        <label>营业执照上传<i>*</i></label>
+        <div class="businessBox">
+            <img src="../images/from/imgLicense.jpg?v=c1d4b38b911541498769136" class="hide businessLicenseImg" id="companyBusinessLicenseImg"/> <!--上传后显示图片-->
+            <a href="javascript:;" id="uploadBusinessFile" class="upload-file">
+                <!--上传后添加 class again -->
+                <i class="icon-yun"></i><input type="file" name="uploadBusinessLicenseImg" id="uploadCompanyBusinessLicenseImg"><u>点击这里上传文件</u>
+                <span>请上传营业执照扫描件或复印件，复印件需加盖公章。<br>支持PNG/JPG图片，最大支持2M。</span>
+            </a>
+        </div>
+        <div class="verify-fail">请上传营业执照！</div>
+    </div>
+    <div class="inputBox uploadBox">
+        <label>法人身份证<i>*</i></label>
+        <div class="id-img">
+            <div class="positive" data-tip="idPositive">
+                <!--<span class="close"></span> &lt;!&ndash;点击 close 重新上传&ndash;&gt;-->
+                <img src="../images/from/id_positive.jpg?v=b3c71b56f21541498769134" class="identityCardFront"/>
+
+                <!--点击 IdPositive 上传正面-->
+                <a href="javascript:;" id="IdPositive"><input type="file" name="uploadIdPositiveImg">身份证人像面</a>
+                <div class="verify-fail">请上传身份证人像面照片！</div>
+            </div>
+            <div class="back" data-tip="idBack">
+                <!--<span class="close"></span> &lt;!&ndash;点击 close 重新上传&ndash;&gt;-->
+                <img src="../images/from/id_back.jpg?v=f415f46f6f1541498769130" class="identityCardBack"/>
+                <!--点击 IdBack 上传背面-->
+                <a href="javascript:;" id="IdBack"><input type="file" name="uploadIdBackImg">身份证国徽面</a>
+                <div class="verify-fail">请上传身份证国徽面照片！</div>
+            </div>
+            <p class="id-card-format">请上传清晰的扫描件，注意证件需显示完整，支持PNG/JPG图片，最大支持2M。上传后可再次点击图片替换。</p>
+        </div>
+    </div>
+
+    <div class="other-information" id="otherInformation">
+        <h3>继续完善企业资料<span id="takeUp"></span></h3>
+
+        <div class="inputBox upload-videoBox" data-tip="companyVideo">
+            <label>视频介绍</label>
+            <div class="businessBox videoBox">
+                <ul class="video-list hide" id="videoList"><!--上传后显示视频-->
+                    <li class="add addCompanyVideo" id="addVideo" title="视频小于30M，支持MP4格式"></li>
+                </ul>
+
+                <a href="javascript:;" class="upload-file uploadVideo-tip">
+                    <!--上传有一个文件后添加 hide  -->
+                    <i class="icon-yun"></i><input type="file" multiple name="companyVideo"><u>点击这里上传文件</u>
+                    <span>上传介绍公司的视频，视频格式.MP4<!-- .AVI .mkv .wmv .rmvb .flv--><br>最大支持30MB，最多上传8个视频</span>
+                </a>
+            </div>
+            <div class="verify-fail">验证未通过</div>
+        </div>
+
+        <div class="inputBox upload-videoBox" data-tip="companyPic">
+            <label>企业相册</label>
+            <div class="businessBox videoBox">
+                <ul class="video-list album-list hide" id="companyPicList"><!--上传后显示图片-->
+                    <li class="add addCompanyPic" title="图片小于2M，支持jpg/png，建议长宽比例1:1"></li>
+                </ul>
+
+                <a href="javascript:;" class="upload-file uploadCompanyPic-tip">
+                    <!--上传有一个文件后添加 hide  -->
+                    <i class="icon-yun"></i><input type="file" multiple name="companyPic"><u>点击这里上传文件</u>
+                    <span>上传公司办公场景：最多上传8张小于2M图片，<br>支持jpg/png等格式，建议比例1:1</span>
+                </a>
+            </div>
+            <div class="verify-fail">验证未通过</div>
+        </div>
+
+        <div class="inputBox upload-videoBox" data-tip="honor">
+            <label>荣誉资质</label>
+            <div class="businessBox videoBox">
+                <ul class="video-list album-list hide" id="honorList"><!--上传后显示荣誉资质-->
+                    <li class="add addHonor" title="图片小于2M，支持jpg/png，建议长宽比例1:1"></li>
+                </ul>
+
+                <a href="javascript:;" class="upload-file uploadHonor-tip">
+                    <!--上传有一个文件后添加 hide  -->
+                    <i class="icon-yun"></i><input type="file" multiple name="honor"><u>点击这里上传文件</u>
+                    <span>上传公司荣誉资质证书：如：ISO9000；ISO9001；ISO14000 。<br>最多上传8张小于2M图片，支持jpg/png等格式，建议比例1:1</span>
+                </a>
+            </div>
+            <div class="verify-fail">验证未通过</div>
+        </div>
+
+        <div class="inputBox uploadBox" data-tip="profile">
+            <label>公司简介</label>
+            <div>
+                                        <textarea name="profile" id="" cols="30" rows="10" class="personal-profile companyProfile" maxlength="1000"
+                                                  placeholder="详细描述你的企业，让需求方更全面的了解你的企业情况。比如：1、公司概况；2、公司发展状况；3、公司文化；4、公司主要产品等。"></textarea>
+                <div class="verify-fail"></div><p class="limit-text">限1000字，还可输入<em class="text-length">1000</em>字</p>
+            </div>
+        </div>
+        <div class="submitBox">
+            <button type="button" class="but-submit submitCompany">提交审核</button>
+        </div>
+    </div>
+    <div class="continue-but">
+        <span id="continueImprove">继续完善</span>
+        <span class="submitCompany">提交审核</span>
+    </div>
+</form>
+
+<pre>
+verify(companyFormOptions, '#informationForm');
+if (submitVerify(companyFormOptions, '#informationForm').flag === false) {
+    console.log('认证失败');
+    return;
+}
+</pre>
+<script>
+    // 企业 表单验证配置
+    var companyFormOptions = [
+        {
+            required: true,
+            name: 'nameCompany', // 验证的项目
+            ele: 'input[name="nameCompany"]', // 需验证的元素，
+            rules: [
+                {minLen: 4, txt: '请输入公司全称!'},
+                {maxLen: 40, txt: '公司名称最长40个字!'},
+            ],
+        },
+        {
+            required: true,
+            name: 'businessLicenseNumber',
+            ele: 'input[name="businessLicenseNumber"]',
+            rules: [
+                {reg: "businessLicense", txt: '营业执照号输入有误！'},
+            ],
+        },
+        {
+            required: true,
+            name: 'contactName',
+            ele: 'input[name="contactName"]',
+            rules: [
+                {minLen: 2, maxLen: 40, txt: '请输入正确的姓名！'},
+            ],
+        },
+        {
+            required: true,
+            name: 'phone',
+            ele: 'input[name="phone"]',
+            rules: [
+                {reg: 'required', txt: '请输入联系人手机！'},
+                {reg: 'phone', txt: '格式不正确，请您输入正确手机帐号！'},
+            ],
+        },
+        {
+            required: false,
+            name: 'email',
+            ele: 'input[name="email"]',
+            rules: [
+                {required: false, reg: 'email', txt: '请您输入正确邮箱帐号！'},
+            ],
+        },
+        {
+            required: true,
+            name: 'area',
+            ele: 'input[name="companyArea"]',
+            rules: [
+                {reg: 'required', txt: '请您选择省份、城市、地区！'},
+                {maxLen: 30, txt: '字数已超出输入限制！'},
+                {reg: /^.+\s.+\s.+$/, txt: '请您选择完整省份、城市、地区！'},
+            ],
+            verify: function (value, flag) {
+                if (flag === true) {
+                    var result = $("input[name='companyArea']").val().split(' ');
+                    initCompanyformData.officeProvince = result[0];
+                    initCompanyformData.officeCity = result[1];
+                    initCompanyformData.officeCounty = result[2];
+                }
+            },
+        },
+        {
+            required: false,
+            name: 'address',
+            ele: 'input[name="address"]',
+        },
+        {
+            required: false,
+            name: 'profile',
+            ele: 'textarea[name="profile"]',
+            rules: [
+                {maxLen: 1000, txt: '字数已超出输入限制！'},
+            ],
+            event: 'input',
+        },
+        {
+            required: true,
+            name: 'license',
+            ele: 'input[name="uploadBusinessLicenseImg"]',
+            event: 'change',
+            rules: [
+                {reg: 'required', txt: '请上传营业执照！'},
+                {format: ['png', 'jpg', 'jpeg'], txt: '文件格式有误，请重新上传！'},
+                {maxSize: 1024 * 2, txt: '上传文件超过2M，请重新上传！'},
+            ],
+            verifyAdd: function (value, flag, option, parent, type) {
+                var src = $('.businessLicenseImg').attr('src');
+                if (src.indexOf('aliyuncs.com') >= 0 && type === 'submit') {
+                    return true;
+                } else {
+                    return flag;
+                }
+            },
+            verifyAll: function (value, flag, option, parent, type) {
+                if (flag === true) {
+                    // 提交时不上传
+                    if (type !== 'submit') {
+                        userFileList.company[option.name] = value[0].name;
+                        $('.companyLicense .businessBox').addClass('again');
+                        $('.businessLicenseImg').removeClass('hide');
+                        uploadBusinessLicenseImg(value, '.businessLicenseImg', parent, 'initCompanyformData');
+                    }
+                    parent.classList.remove('verify-error');
+                } else {
+                    if (userFileList.company[option.name] === undefined || value !== '') {
+                        parent.classList.add('verify-error');
+                    }
+                }
+                console.log('营业执照验证', flag ? '通过' : '不通过', value, typeof value);
+            },
+        },
+        {
+            required: true,
+            name: 'idPositive',
+            ele: 'input[name="uploadIdPositiveImg"]',
+            event: 'change',
+            rules: [
+                {reg: 'required', txt: '请上传身份证正面照！'},
+                {format: ['png', 'jpg', 'jpeg'], txt: '文件格式有误，请重新上传！'},
+                {maxSize: 1024 * 2, txt: '上传文件超过2M，请重新上传！'},
+            ],
+            verifyAdd: function (value, flag, option, parent, type) {
+                var src = $('.identityCardFront').attr('src');
+                if (src.indexOf('aliyuncs.com') >= 0 && type === 'submit') {
+                    return true;
+                } else {
+                    return flag;
+                }
+            },
+            verifyAll: function (value, flag, option, parent, type) {
+                if (flag === true) {
+                    // 提交时不上传
+                    if (type !== 'submit') {
+                        userFileList.company[option.name] = value[0].name;
+                        parent.classList.add('again');
+                        uploadIdPositiveImg(value, '.identityCardFront', parent, 'initCompanyformData');
+                    }
+                    parent.classList.remove('verify-error');
+                } else {
+                    if (userFileList.company[option.name] === undefined || value !== '') {
+                        parent.classList.add('verify-error');
+                    }
+                }
+                console.log('正面照验证', flag ? '通过' : '不通过', value, typeof value);
+                if ($(".verify-fail", parent).is(":visible") === true) {
+                    $("#informationForm .id-card-format").css("display", "none");
+                }
+                return true;
+            },
+        },
+        {
+            required: true,
+            name: 'idBack',
+            ele: 'input[name="uploadIdBackImg"]',
+            event: 'change',
+            rules: [
+                {reg: 'required', txt: '请上传身份证反面照！'},
+                {format: ['png', 'jpg', 'jpeg'], txt: '文件格式有误，请重新上传！'},
+                {maxSize: 1024 * 2, txt: '上传文件超过2M，请重新上传！'},
+            ],
+            verifyAdd: function (value, flag, option, parent, type) {
+                var src = $('.identityCardBack').attr('src');
+                if (src.indexOf('aliyuncs.com') >= 0 && type === 'submit') {
+                    return true;
+                } else {
+                    return flag;
+                }
+            },
+            verifyAll: function (value, flag, option, parent, type) {
+                if (flag === true) {
+                    if (type !== 'submit') {
+                        userFileList.company[option.name] = value[0].name;
+                        parent.classList.add('again');
+                        uploadIdPositiveImg(value, '.identityCardBack', parent, 'initCompanyformData');
+                    }
+                    parent.classList.remove('verify-error');
+                } else {
+                    if (userFileList.company[option.name] === undefined || value !== '') {
+                        parent.classList.add('verify-error');
+                    }
+                }
+                console.log('反面照验证', flag ? '通过' : '不通过', value, typeof value);
+                if ($(".verify-fail", parent).is(":visible") === true) {
+                    $("#informationForm .id-card-format").css("display", "none");
+                }
+            },
+        },
+        {
+            required: false,
+            name: 'companyVideo',
+            ele: 'input[name="companyVideo"]',
+            event: 'change',
+            rules: [
+                {maxSize: 30 * 1024, txt: '文件超过30M，请重新上传！'},
+                {format: ['mp4'], txt: '请上传mp4格式视频文件!'},
+                {reg: /[&,|\/<>!]/, regNot: true, txt: '文件名中不能含有特殊符号&,|/<>!'},
+            ],
+            verify: function (value, flag, option, parent, submit) {
+                console.log(value, flag, option, parent, "视频");
+                if (flag === true && value) {
+
+                    console.log(flag, value, '视频介绍 验证通过');
+                    if (submit !== 'submit') {
+                        console.log('提交按钮不上传', submit);
+                        if ((companyVideoList.get().length + value.length) > 8) {
+                            newPopupNew("OKODM提示", '最多只能上传8个视频', "notBtn");
+                            return false;
+                        }
+                        for (var i = 0; i < value.length; i++) {
+                            var loadingIndex = companyVideoList.add({title: value[i].name, file: 'loading'});
+                            (function (i, loadingIndex) {
+                                uploadCompanyVideo([value[i]], function (jsonResult) {
+                                    console.log(value, i, 's');
+                                    companyVideoList.add({
+                                        title: value[i].name,
+                                        file: jsonResult.url,
+                                        loadingIndex: loadingIndex,
+                                    });
+                                });
+                            })(i, loadingIndex);
+                        }
+                        if ($('#videoList').hasClass('hide') && value !== '') {
+                            $('#videoList').removeClass('hide');
+                            $('.uploadVideo-tip').addClass('hide');
+                        }
+                    }
+                }
+            },
+        },
+        {
+            required: false,
+            name: 'companyPic',
+            ele: 'input[name="companyPic"]',
+            event: 'change',
+            rules: [
+                {format: ['png', 'jpg', 'jpeg'], txt: '文件格式有误，请重新上传！'},
+                {maxSize: 1024 * 2, txt: '上传文件超过2M，请重新上传！'},
+            ],
+            verify: function (value, flag, option, parent, submit) {
+                if (flag === true && value) {
+
+                    if (submit !== 'submit') {
+                        if ((companyPicList.get().length + value.length) > 8) {
+                            newPopupNew("OKODM提示", '最多只能上传8张图', "notBtn");
+                            $(option.ele).val('');
+                            return false;
+                        }
+
+                        for (var i = 0; i < value.length; i++) {
+                            var loadingIndex = companyPicList.add({title: value[i].name, file: 'loading'});
+                            (function (i, loadingIndex) {
+                                uploadCompanyPic([value[i]], function (jsonResult) {
+                                    console.log(value, i, 's');
+                                    companyPicList.add({
+                                        title: value[i].name,
+                                        file: jsonResult.url,
+                                        loadingIndex: loadingIndex,
+                                    });
+                                });
+                            })(i, loadingIndex);
+                        }
+
+                        if ($('#companyPicList').hasClass('hide') && value !== '') {
+                            $('#companyPicList').removeClass('hide');
+                            $('.uploadCompanyPic-tip').addClass('hide');
+                        }
+                    }
+                }
+            },
+        },
+        {
+            required: false,
+            name: 'honor',
+            ele: 'input[name="honor"]',
+            event: 'change',
+            rules: [
+                {format: ['png', 'jpg', 'jpeg'], txt: '文件格式有误，请重新上传！'},
+                {maxSize: 1024 * 2, txt: '上传文件超过2M，请重新上传！'},
+            ],
+            verify: function (value, flag, option, parent, submit) {
+                console.warn(honorList.get(), value, honorList.get().length, value.length, '荣誉资质');
+                if (flag === true && value) {
 
 
+                    if (submit !== 'submit') {
+                        if ((honorList.get().length + value.length) > 8) {
+                            newPopupNew("OKODM提示", '最多只能上传8张图', "notBtn");
+                            return false;
+                        }
+
+                        for (var i = 0; i < value.length; i++) {
+                            var loadingIndex = honorList.add({title: value[i].name, file: 'loading'});
+                            (function (i, loadingIndex) {
+                                uploadHonor([value[i]], function (jsonResult) {
+                                    console.log(value, i, 's');
+                                    honorList.add({
+                                        title: value[i].name,
+                                        file: jsonResult.url,
+                                        loadingIndex: loadingIndex,
+                                    });
+                                });
+                            })(i, loadingIndex);
+                        }
+
+                        if ($('#honorList').hasClass('hide') && value !== '') {
+                            $('#honorList').removeClass('hide');
+                            $('.uploadHonor-tip').addClass('hide');
+                        }
+                    }
+                }
+            },
+        },
+    ];
+    verify(companyFormOptions, '#informationForm');
+
+</script>
 
 </body>
 </html>
